@@ -32,16 +32,17 @@ def classify0(inX, data_set, labels, k):
                                 key=operator.itemgetter(1), reverse=True)
     return sorted_class_count[0][0]
 
-def file2matrix(filename):
+def file2matrix(filename, split_sep=None):
     fr = open(filename)
     array_of_lines = fr.readlines()
     number_of_lines = len(array_of_lines)
-    return_mat = zeros((number_of_lines, 3))
+    number_of_width = len(array_of_lines[0].strip().split(split_sep)) - 1
+    return_mat = zeros((number_of_lines, number_of_width))
     class_label_vector = []
     index = 0
     for line in array_of_lines:
         line = line.strip()
-        list_from_line = line.split()
+        list_from_line = line.split(split_sep)
         return_mat[index, :] = list_from_line[0:-1]
         class_label_vector.append(int(list_from_line[-1]))
         index += 1
@@ -130,3 +131,38 @@ def handwriting_class_test():
             error_count += 1
     print("\nthe total number of errors is: %d" % error_count)
     print("\nthe total error rate is: %f" % (error_count/float(m_test)))
+
+def iris_class_test():
+    ho_ratio = 0.20
+    dating_data_mat, dating_labels = file2matrix('iris.txt')
+    norm_mat, ranges, min_vals = auto_norm(dating_data_mat)
+    m = norm_mat.shape[0]
+    num_test_vecs = int(m * ho_ratio)
+    error_count = 0
+    for i in range(num_test_vecs):
+        classifier_result = classify0(norm_mat[i, :], \
+                                      norm_mat[num_test_vecs:m, :], \
+                                      dating_labels[num_test_vecs:m], 3)
+        print("the classifier came back with: %d, the real answer is: %d" \
+              % (classifier_result, dating_labels[i]))
+        if classifier_result != dating_labels[i]:
+            error_count += 1
+    print("the total error rate is: %f" % (error_count/float(num_test_vecs)))
+
+def covtype_class_test():
+    ho_ratio = 0.5
+    dating_data_mat, dating_labels = file2matrix('covtype_small.txt')
+    norm_mat, ranges, min_vals = auto_norm(dating_data_mat)
+    m = norm_mat.shape[0]
+    num_test_vecs = int(m * ho_ratio)
+    error_count = 0
+    for i in range(num_test_vecs):
+        classifier_result = classify0(norm_mat[i, :], \
+                                      norm_mat[:, :], \
+                                      dating_labels[:], 10)
+        if classifier_result != dating_labels[i]:
+            error_count += 1
+    print("\nthe total number of errors is: %d" % error_count)
+    print("\nthe total error rate is: %f" % (error_count/float(num_test_vecs)))
+
+covtype_class_test()
