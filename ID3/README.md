@@ -1,6 +1,6 @@
 ###lenses.txt  
 Lenses dataset from UCI, which is splitted by '\t'.  
-###covtype/covtype.txt  
+###covtype/covtype.zip/covtype.txt  
 Covtype dataset from UCI.  
 It works for function covtype_class_test().  
 ###covtype/covtype_res.txt  
